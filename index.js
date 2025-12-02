@@ -28,12 +28,45 @@ async function askForValidPath() {
 
 const userPath = await askForValidPath();
 
-const home = os.homedir();
-const textsDir = path.join(home, "texts");
-const imagesDir = path.join(home, "images");
+const documentExt = [".pdf", ".docx", ".txt", ".xlsx"];
 
-await fs.mkdir(textsDir, { recursive: true });
+const imageExt = [
+  ".apng",
+  ".png",
+  ".avif",
+  ".gif",
+  ".jpg",
+  ".jpeg",
+  ".jfif",
+  ".pjpeg",
+  ".pjp",
+  ".svg",
+  ".webp",
+];
+
+const videoExt = [
+  ".mp4",
+  ".mov",
+  ".wmv",
+  ".avi",
+  ".mkv",
+  ".webm",
+  ".flv",
+  ".m4v",
+  ".mpeg",
+  ".mpg",
+];
+
+const home = os.homedir();
+const documentsDir = path.join(home, "documents");
+const imagesDir = path.join(home, "images");
+const videosDir = path.join(home, "videos");
+const othersDir = path.join(home, "others");
+
+await fs.mkdir(documentsDir, { recursive: true });
 await fs.mkdir(imagesDir, { recursive: true });
+await fs.mkdir(videosDir, { recursive: true });
+await fs.mkdir(othersDir, { recursive: true });
 
 const files = await fs.readdir(userPath);
 
@@ -44,10 +77,14 @@ for (const file of files) {
 
   const ext = path.extname(file).toLowerCase();
 
-  if (ext === ".txt") {
-    await fs.rename(filePath, path.join(textsDir, file));
-  } else if (ext === ".jpg") {
+  if (documentExt.includes(ext)) {
+    await fs.rename(filePath, path.join(documentsDir, file));
+  } else if (imageExt.includes(ext)) {
     await fs.rename(filePath, path.join(imagesDir, file));
+  } else if (videoExt.includes(ext)) {
+    await fs.rename(filePath, path.join(videosDir, file));
+  } else {
+    await fs.rename(filePath, path.join(othersDir, file));
   }
 }
 
